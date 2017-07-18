@@ -9,8 +9,8 @@ import kotlinx.android.synthetic.main.row.view.*
 import mustafaozhan.github.com.simplefilemanager.model.Item
 
 
-class FileArrayAdapter(private val c: Context, private val id: Int,
-                       private val items: List<Item>) : ArrayAdapter<Item>(c, id, items) {
+class FileManagerAdapter(private val c: Context, private val id: Int,
+                         private val items: List<Item>) : ArrayAdapter<Item>(c, id, items) {
     override fun getItem(i: Int): Item? {
         return items[i]
     }
