@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="1dp"
+        card_view:cardCornerRadius="3dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imgView"
+                android:layout_width="50dip"
+                android:layout_height="50dip" />
+
+            <TextView
+                android:id="@+id/txtName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip"
+                android:layout_marginTop="5dip"
+                android:layout_toRightOf="@+id/imgView"
+                android:text="Name"
+                android:textStyle="bold">
+
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/txtItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtName"
+                android:layout_marginLeft="10dip"
+                android:layout_toRightOf="@+id/imgView"
+                android:text="Items">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/txtDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/txtName"
+                android:layout_marginLeft="5dip"
+                android:text="Date">
+
+            </TextView>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>
