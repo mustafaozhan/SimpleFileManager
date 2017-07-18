@@ -1,18 +1,19 @@
 package mustafaozhan.github.com.simplefilemanager.ui.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ListFragment
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.ListView
-import android.widget.Toast
-import mustafaozhan.github.com.simplefilemanager.model.Item
 import mustafaozhan.github.com.simplefilemanager.R
+import mustafaozhan.github.com.simplefilemanager.model.Item
 import mustafaozhan.github.com.simplefilemanager.ui.adapters.FileArrayAdapter
+import mustafaozhan.github.com.simplefilemanager.util.FileOpen
 import java.io.File
 import java.sql.Date
 import java.text.DateFormat
 import java.util.*
+
 
 class FileManagerFragment : ListFragment() {
 
@@ -25,6 +26,8 @@ class FileManagerFragment : ListFragment() {
     }
 
     private fun fill(f: File) {
+
+
         val dirs = f.listFiles()
 
         val dir = ArrayList<Item>()
@@ -66,26 +69,26 @@ class FileManagerFragment : ListFragment() {
         if (!f.name.equals("sdcard", ignoreCase = true))
             dir.add(0, Item("build/generated/source/aidl/androidTest", "Parent Directory", "", f.parent, "directory_up"))
         adapter = FileArrayAdapter(activity, R.layout.row, dir)
+
         this.listAdapter = adapter
+
     }
 
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-        // TODO Auto-generated method stub
+
         super.onListItemClick(l, v, position, id)
         val o = adapter!!.getItem(position)
         if (o!!.image.equals("directory_icon", ignoreCase = true) || o.image.equals("directory_up", ignoreCase = true)) {
             currentDir = File(o.path)
+
             fill(currentDir!!)
-        } else {
-            onFileClick(o)
-        }
-    }
-
-    private fun onFileClick(o: Item) {
-        Toast.makeText(context, "Clicked: ${o.name}", Toast.LENGTH_SHORT).show()
-//        val intent = Intent()
-//        intent.putExtra("GetPath", currentDir!!.toString())
-//        intent.putExtra("GetFileName", o.name)
+            val animation = AnimationUtils.loadAnimation(activity,
+                    R.anim.myanimation)
+            view!!.startAnimation(animation)
+        } else
+            FileOpen.openFile(context, File(o.path))
 
     }
+
+
 }

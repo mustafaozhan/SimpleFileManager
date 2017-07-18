@@ -12,21 +12,24 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import mustafaozhan.github.com.simplefilemanager.R
 import mustafaozhan.github.com.simplefilemanager.ui.fragments.FileManagerFragment
+import android.os.StrictMode
+
+
 
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-
-
         val PERMISSIONS_REQUEST_CODE = 0
-        val FILE_PICKER_REQUEST_CODE = 1
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        val builder = StrictMode.VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())
 
 
         checkPermissionsAndOpenFilePicker()
@@ -81,7 +84,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
                 .add(R.id.myFrame, FileManagerFragment()).commit()
     }
-
 
 
 }

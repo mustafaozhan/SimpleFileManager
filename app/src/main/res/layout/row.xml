@@ -9,14 +9,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="1dp"
-        card_view:cardCornerRadius="3dp">
+        android:layout_margin="5dp"
+        android:layout_marginRight="5sp"
+        card_view:cardCornerRadius="5dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
+                android:layout_marginLeft="2sp"
+                android:layout_marginTop="2sp"
                 android:id="@+id/imgView"
                 android:layout_width="50dip"
                 android:layout_height="50dip" />
@@ -46,13 +49,15 @@
             </TextView>
 
             <TextView
+                android:layout_marginEnd="5sp"
                 android:id="@+id/txtDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/txtName"
                 android:layout_marginLeft="5dip"
-                android:text="Date">
+                android:text="Date"
+                android:layout_marginRight="5sp">
 
             </TextView>
         </RelativeLayout>

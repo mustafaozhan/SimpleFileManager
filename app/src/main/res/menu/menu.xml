@@ -8,10 +8,17 @@
 
     <item
 
+        android:id="@+id/sync"
+        android:orderInCategory="100"
+        android:title="Sync"
+        android:icon="@drawable/sync"
+        app:showAsAction="always" />
+    <item
+
         android:id="@+id/settings"
         android:orderInCategory="100"
         android:title="Settings"
-        android:icon="@drawable/settings_icon"
-        app:showAsAction="always" />
+
+        app:showAsAction="never" />
 
 </menu>
