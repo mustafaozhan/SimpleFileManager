@@ -154,9 +154,15 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                 if (actionMode != null) {
                     actionMode.finish()
                 }
+                adapter!!.clearSelection()
                 return true
             }
-            else -> return false
+
+            else ->
+
+                return true
+
+
         }
     }
 
@@ -187,6 +193,7 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
     override fun onDestroyActionMode(p0: ActionMode?) {
         toDelete!!.clear()
+        adapter!!.clearSelection()
     }
 
     fun animate() {
