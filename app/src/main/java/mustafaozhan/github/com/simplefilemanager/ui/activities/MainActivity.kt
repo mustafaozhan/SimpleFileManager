@@ -44,14 +44,14 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
-                if (supportFragmentManager.findFragmentById(R.id.myFrame) != null) {
+                if (supportFragmentManager.findFragmentById(R.id.myFrame) != null) {//checking if any fragment is open
                     supportFragmentManager
                             .beginTransaction().
                             remove(supportFragmentManager.findFragmentById(R.id.myFrame)).commit()
                 }
                 fragmentManager
                         .beginTransaction()
-                        .replace(R.id.myFrame, MyPreferenceFragment(), PREFERENCE)
+                        .replace(R.id.myFrame, MyPreferenceFragment(), PREFERENCE)//opening preference fragment
                         .commit()
                 return true
             }
@@ -63,14 +63,14 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissionsAndOpenFilePicker() {
         val permission = Manifest.permission.READ_EXTERNAL_STORAGE
 
-        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) { //checking if we  have permissions
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 showError()
             } else {
                 ActivityCompat.requestPermissions(this, arrayOf<String>(permission), PERMISSIONS_REQUEST_CODE)
             }
         } else {
-            openFileManager()
+            openFileManager() //opening filemanager fragment
         }
     }
 
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+                                            permissions: Array<String>, grantResults: IntArray) { // geting result from permissinon request
         when (requestCode) {
             PERMISSIONS_REQUEST_CODE -> {
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -98,13 +98,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
 
-        if (doubleBackToExitPressedOnce) {
+        if (doubleBackToExitPressedOnce) { //this is for blocking quit from application with single pressing back
             super.onBackPressed()
             return
         }
 
         val myFragment = fragmentManager.findFragmentByTag(PREFERENCE)
-        if (myFragment != null && myFragment.isVisible) {
+        if (myFragment != null && myFragment.isVisible) {// if we are in preference fragment we need to close it and go back to file manager fragment
 
             fragmentManager
                     .beginTransaction()
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             this.doubleBackToExitPressedOnce = true
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
 
-            Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
+            Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000) //limiting double check time
         }
     }
 

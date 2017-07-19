@@ -24,7 +24,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     var toDelete: ArrayList<Item>? = null
     private var currentDir: File? = null
     var mListView: ListView? = null
-
     private var adapter: FileManagerAdapter? = null
 
 
@@ -35,9 +34,9 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         setHasOptionsMenu(true)
         PreferenceManager.setDefaultValues(activity, R.xml.fragment_preference, false)
         val appPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
-        val PATH = appPreferences.getString("defaultFolder", "/sdcard/")
+        val PATH = appPreferences.getString("defaultFolder", "/sdcard/")//getting home directory if first time it will be "/sdcard/"
         currentDir = File(PATH)
-        setUi(File(PATH))
+        setUi(File(PATH))//setting user interface
         return fragmentView
     }
 
@@ -60,12 +59,12 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         myListView.setOnItemClickListener { adapterView, view, i, l ->
 
             val o = adapter!!.getItem(i)
-            if (o!!.image.equals("directory_icon", ignoreCase = true) || o.image.equals("directory_up", ignoreCase = true)) {
-                currentDir = File(o.path)
-                setUi(currentDir!!)
+            if (o!!.image.equals("directory_icon", ignoreCase = true) || o.image.equals("directory_up", ignoreCase = true)) {//if it is a file it will not change path
+                currentDir = File(o.path)//changing path according to clicked item
+                setUi(currentDir!!)//refreshing user interface
                 animate()
             } else
-                FileOpen.openFile(activity, File(o.path))
+                FileOpen.openFile(activity, File(o.path))// if it is a file opening file
         }
 
     }
@@ -102,8 +101,8 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         } catch (e: Exception) {
 
         }
-        Collections.sort(dir)
-        Collections.sort(fls)
+        Collections.sort(dir)//firstly directories
+        Collections.sort(fls)//than files
         dir.addAll(fls)
         if (!file.name.equals("sdcard", ignoreCase = true))
             dir.add(0, Item("build/generated/source/aidl/androidTest", "Parent Directory", "", file.parent, "directory_up"))
@@ -115,7 +114,7 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.sync -> {
-                setUi(currentDir!!)
+                setUi(currentDir!!)//refreshing user interface
                 animate()
                 return true
             }
@@ -148,16 +147,16 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     override fun onItemCheckedStateChanged(actionMode: ActionMode?, position: Int, id: Long, checked: Boolean) {
         if (checked) {
             toDelete!!.add(adapter?.getItem(position)!!)
-            adapter!!.setNewSelection(position, checked);
+            adapter!!.setNewSelection(position, checked)
 
         } else {
             toDelete!!.remove(adapter!!.getItem(position))
-            adapter!!.removeSelection(position);
+            adapter!!.removeSelection(position)
 
         }
         adapter!!.notifyDataSetChanged()
         val checkedItems = mListView!!.checkedItemCount
-        actionMode!!.title = checkedItems.toString() + " Selected"
+        actionMode!!.title = checkedItems.toString() + " Selected" //showing how many items checked
     }
 
     override fun onCreateActionMode(actionMode: ActionMode?, menu: Menu?): Boolean {
@@ -171,7 +170,7 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         adapter!!.clearSelection()
     }
 
-    fun animate() {
+    fun animate() {//custom animation method
         val animation = AnimationUtils.loadAnimation(activity,
                 R.anim.myanimation)
         view!!.startAnimation(animation)

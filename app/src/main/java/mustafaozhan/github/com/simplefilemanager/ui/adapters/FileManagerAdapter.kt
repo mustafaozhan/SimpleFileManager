@@ -26,7 +26,7 @@ class FileManagerAdapter(private val c: Context, private val id: Int,
         }
 
         val o = items[position]
-        if (mSelection[position] != null) {
+        if (mSelection[position] != null) {//highlighting according to selection
             view!!.setBackgroundColor(Color.GRAY)
         } else {
             view!!.setBackgroundColor(Color.TRANSPARENT)
@@ -43,7 +43,7 @@ class FileManagerAdapter(private val c: Context, private val id: Int,
 
         return view
     }
-
+//functions above for cab selection defining and highlighting
     fun setNewSelection(position: Int, value: Boolean) {
         mSelection.put(position, value)
         notifyDataSetChanged()
