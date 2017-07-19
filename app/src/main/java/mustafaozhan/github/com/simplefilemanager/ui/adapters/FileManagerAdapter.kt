@@ -1,6 +1,7 @@
 package mustafaozhan.github.com.simplefilemanager.ui.adapters
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,28 +16,57 @@ class FileManagerAdapter(private val c: Context, private val id: Int,
         return items[i]
     }
 
+    private var mSelection = HashMap<Int, Boolean>()
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var v = convertView
-        if (v == null) {
+        var view = convertView
+        if (view == null) {
             val vi = c.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            v = vi.inflate(id, null)
+            view = vi.inflate(id, null)
         }
 
-
         val o = items[position]
-
+        if (mSelection[position] != null) {
+            view!!.setBackgroundColor(Color.GRAY)
+        } else {
+            view!!.setBackgroundColor(Color.TRANSPARENT)
+        }
 
         val uri = "drawable/" + o.image
         val imageResource = c.resources.getIdentifier(uri, null, c.packageName)
         val image = c.resources.getDrawable(imageResource)
-        v!!.imgView.setImageDrawable(image)
+        view.imgView.setImageDrawable(image)
 
-        v.txtName.text = o.name
-        v.txtItem.text = o.data
-        v.txtDate.text = o.date
+        view.txtName.text = o.name
+        view.txtItem.text = o.data
+        view.txtDate.text = o.date
 
 
-        return v
+        return view
+    }
+
+    fun setNewSelection(position: Int, value: Boolean) {
+        mSelection.put(position, value)
+        notifyDataSetChanged()
+    }
+
+    fun isPositionChecked(position: Int): Boolean {
+        val result = mSelection[position]
+        return result ?: false
+    }
+
+    fun getCurrentCheckedPosition(): Set<Int> {
+        return mSelection.keys
+    }
+
+    fun removeSelection(position: Int) {
+        mSelection.remove(position)
+        notifyDataSetChanged()
+    }
+
+    fun clearSelection() {
+        mSelection = HashMap<Int, Boolean>()
+        notifyDataSetChanged()
     }
 
 }

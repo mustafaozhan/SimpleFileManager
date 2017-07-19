@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/MainContentLayout1"
+    android:layout_width="match_parent"
+
+
+    android:layout_height="match_parent" >
+
+    <ListView
+        android:id="@+id/myListView"
+        android:choiceMode="multipleChoice"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:drawSelectorOnTop="true"
+        />
+</LinearLayout>

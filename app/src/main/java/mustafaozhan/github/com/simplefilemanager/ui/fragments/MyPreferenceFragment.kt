@@ -7,6 +7,7 @@ import mustafaozhan.github.com.simplefilemanager.R
 import android.preference.Preference
 import android.preference.Preference.OnPreferenceChangeListener
 import android.preference.EditTextPreference
+import android.preference.PreferenceManager
 import android.view.animation.AnimationUtils
 
 
@@ -21,7 +22,7 @@ class MyPreferenceFragment : PreferenceFragment() {
 
 
         val defaultFolder = findPreference("defaultFolder") as EditTextPreference
-
+        PreferenceManager.setDefaultValues(activity, R.xml.fragment_preference, false)
 
 
         defaultFolder.onPreferenceChangeListener = OnPreferenceChangeListener { preference, newValue ->

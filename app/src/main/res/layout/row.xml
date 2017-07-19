@@ -8,10 +8,10 @@
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        card_view:cardBackgroundColor="@color/blue_grey_700"
         android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:layout_marginRight="5sp"
-        card_view:cardCornerRadius="5dp">
+        android:layout_margin="1dp"
+        card_view:cardCornerRadius="3dp">
 
         <RelativeLayout
             android:layout_width="match_parent"

@@ -1,12 +1,13 @@
 package mustafaozhan.github.com.simplefilemanager.ui.fragments
 
-import android.app.ListFragment
+import android.app.Fragment
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.view.animation.AnimationUtils
+import android.widget.AbsListView
 import android.widget.ListView
+import kotlinx.android.synthetic.main.fragment_filemanager.*
 import mustafaozhan.github.com.simplefilemanager.R
 import mustafaozhan.github.com.simplefilemanager.model.Item
 import mustafaozhan.github.com.simplefilemanager.ui.adapters.FileManagerAdapter
@@ -15,29 +16,63 @@ import java.io.File
 import java.sql.Date
 import java.text.DateFormat
 import java.util.*
-import android.content.SharedPreferences
+import kotlin.collections.ArrayList
 
 
+class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
 
-class FileManagerFragment : ListFragment() {
-
-
+    var toDelete: ArrayList<Item>? = null
     private var currentDir: File? = null
+    var mListView: ListView? = null
+
+
     private var adapter: FileManagerAdapter? = null
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val fragmentView = inflater.inflate(R.layout.fragment_filemanager, container, false)
+        bindViews(fragmentView)
+
         setHasOptionsMenu(true)
 
         PreferenceManager.setDefaultValues(activity, R.xml.fragment_preference, false)
 
-
         val appPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         val PATH = appPreferences.getString("defaultFolder", "/sdcard/")
 
-
+        currentDir = File(PATH)
         setUi(File(PATH))
+        return fragmentView
+    }
 
+    private fun bindViews(view: View) {
+        mListView = view.findViewById(R.id.myListView)
+
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        init()
+    }
+
+    private fun init() {
+
+        mListView!!.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+        mListView!!.setMultiChoiceModeListener(this)
+        toDelete = ArrayList<Item>()
+
+        myListView.setOnItemClickListener { adapterView, view, i, l ->
+
+
+            val o = adapter!!.getItem(i)
+            if (o!!.image.equals("directory_icon", ignoreCase = true) || o.image.equals("directory_up", ignoreCase = true)) {
+                currentDir = File(o.path)
+                setUi(currentDir!!)
+                animate()
+            } else
+                FileOpen.openFile(activity, File(o.path))
+        }
 
     }
 
@@ -83,23 +118,11 @@ class FileManagerFragment : ListFragment() {
             dir.add(0, Item("build/generated/source/aidl/androidTest", "Parent Directory", "", f.parent, "directory_up"))
         adapter = FileManagerAdapter(activity, R.layout.row, dir)
 
-        this.listAdapter = adapter
+        mListView!!.adapter = adapter
 
     }
 
-    override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-
-        super.onListItemClick(l, v, position, id)
-        val o = adapter!!.getItem(position)
-        if (o!!.image.equals("directory_icon", ignoreCase = true) || o.image.equals("directory_up", ignoreCase = true)) {
-            currentDir = File(o.path)
-
-            setUi(currentDir!!)
-            animate()
-        } else
-            FileOpen.openFile(activity, File(o.path))
-
-    }
+    //
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -113,6 +136,57 @@ class FileManagerFragment : ListFragment() {
 
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+
+
+        mode!!.title = "Select Items"
+        return true
+    }
+
+    override fun onActionItemClicked(actionMode: ActionMode?, menuItem: MenuItem?): Boolean {
+        when (menuItem!!.itemId) {
+            R.id.action_delete -> {
+                for (item in toDelete!!) {
+                    //listView.remove(item)
+                }
+                if (actionMode != null) {
+                    actionMode.finish()
+                }
+                return true
+            }
+            else -> return false
+        }
+    }
+
+    override fun onItemCheckedStateChanged(actionMode: ActionMode?, position: Int, id: Long, checked: Boolean) {
+        if (checked) {
+            toDelete!!.add(adapter?.getItem(position)!!)
+
+
+            adapter!!.setNewSelection(position, checked);
+
+
+        } else {
+            toDelete!!.remove(adapter!!.getItem(position))
+            adapter!!.removeSelection(position);
+
+        }
+        adapter!!.notifyDataSetChanged()
+        val checkedItems = mListView!!.checkedItemCount
+        actionMode!!.title = checkedItems.toString() + " Selected"
+    }
+
+    override fun onCreateActionMode(actionMode: ActionMode?, menu: Menu?): Boolean {
+        val menuInflater = activity.menuInflater
+        menuInflater.inflate(R.menu.toolbar_cab, menu)
+        return true
+    }
+
+
+    override fun onDestroyActionMode(p0: ActionMode?) {
+        toDelete!!.clear()
     }
 
     fun animate() {

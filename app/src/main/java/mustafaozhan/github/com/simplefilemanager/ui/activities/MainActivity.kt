@@ -6,11 +6,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.StrictMode
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import mustafaozhan.github.com.simplefilemanager.R
@@ -19,17 +17,20 @@ import mustafaozhan.github.com.simplefilemanager.ui.fragments.MyPreferenceFragme
 
 
 class MainActivity : AppCompatActivity() {
+
+
     var doubleBackToExitPressedOnce = false
-    val FILE_MANAGER="filemanager"
-    val PREFERENCE="preference"
+    val FILE_MANAGER = "filemanager"
+    val PREFERENCE = "preference"
+
     companion object {
         val PERMISSIONS_REQUEST_CODE = 0
     }
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
 
 
         val builder = StrictMode.VmPolicy.Builder()
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         checkPermissionsAndOpenFilePicker()
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -47,16 +49,16 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settings -> {
-                if(supportFragmentManager.findFragmentById(R.id.myFrame) != null) {
+                if (supportFragmentManager.findFragmentById(R.id.myFrame) != null) {
                     supportFragmentManager
                             .beginTransaction().
                             remove(supportFragmentManager.findFragmentById(R.id.myFrame)).commit()
                 }
                 fragmentManager
                         .beginTransaction()
-                        .replace(R.id.myFrame, MyPreferenceFragment(),PREFERENCE)
+                        .replace(R.id.myFrame, MyPreferenceFragment(), PREFERENCE)
                         .commit()
-                    return true
+                return true
             }
 
         }
@@ -96,9 +98,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun openFileManager() {
         fragmentManager.beginTransaction()
-                .add(R.id.myFrame, FileManagerFragment(),FILE_MANAGER).commit()
+                .add(R.id.myFrame, FileManagerFragment(), FILE_MANAGER).commit()
     }
-
 
 
     override fun onBackPressed() {
@@ -109,25 +110,25 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
         val myFragment = fragmentManager.findFragmentByTag(PREFERENCE)
         if (myFragment != null && myFragment.isVisible) {
 
             fragmentManager
                     .beginTransaction()
-                    .replace(R.id.myFrame, FileManagerFragment(),FILE_MANAGER)
+                    .replace(R.id.myFrame, FileManagerFragment(), FILE_MANAGER)
                     .commit()
 
 
-
             // openFileManager()
-        }else{
+        } else {
             this.doubleBackToExitPressedOnce = true
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
 
             Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
         }
     }
+
+
 
 
 

@@ -2,17 +2,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
 
+    <PreferenceCategory android:title="Preferences">
 
+        <EditTextPreference
+            android:defaultValue="@string/default_path"
+            android:key="defaultFolder"
+            android:summary="Default folder for startup"
+            android:title="Default Folder" />
 
-        <PreferenceCategory
-            android:title="Preferences">
-
-            <EditTextPreference
-
-                android:key="defaultFolder"
-                android:title="Default Folder"
-                android:summary="Default folder for startup and refreshing"/>
-
-        </PreferenceCategory>
+    </PreferenceCategory>
 
 </PreferenceScreen>
