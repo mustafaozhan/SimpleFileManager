@@ -58,6 +58,7 @@ class FileManagerAdapter(private val c: Context, private val id: Int,
         return mSelection.keys
     }
 
+
     fun removeSelection(position: Int) {
         mSelection.remove(position)
         notifyDataSetChanged()

@@ -3,6 +3,7 @@ package mustafaozhan.github.com.simplefilemanager.ui.fragments
 import android.app.Fragment
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.AbsListView
@@ -21,11 +22,11 @@ import kotlin.collections.ArrayList
 
 class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
-    var toDelete: ArrayList<Item>? = null
+
     private var currentDir: File? = null
     var mListView: ListView? = null
     private var adapter: FileManagerAdapter? = null
-
+    var fistTime: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val fragmentView = inflater.inflate(R.layout.fragment_filemanager, container, false)
@@ -36,13 +37,18 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         val appPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         val PATH = appPreferences.getString("defaultFolder", "/sdcard/")//getting home directory if first time it will be "/sdcard/"
         currentDir = File(PATH)
-        setUi(File(PATH))//setting user interface
+        if (fistTime) {
+            Thread().run {
+                setUi(File(PATH))
+                fistTime = false
+            }
+        } else
+            setUi(File(PATH))//setting user interface
         return fragmentView
     }
 
     private fun bindViews(view: View) {
         mListView = view.findViewById(R.id.myListView)
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -51,11 +57,8 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     }
 
     private fun init() {
-
         mListView!!.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
         mListView!!.setMultiChoiceModeListener(this)
-        toDelete = ArrayList<Item>()
-
         myListView.setOnItemClickListener { adapterView, view, i, l ->
 
             val o = adapter!!.getItem(i)
@@ -66,14 +69,10 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
             } else
                 FileOpen.openFile(activity, File(o.path))// if it is a file opening file
         }
-
     }
 
-
     fun setUi(file: File) {
-
         val dirs = file.listFiles()
-
         val dir = ArrayList<Item>()
         val fls = ArrayList<Item>()
         try {
@@ -130,32 +129,41 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     override fun onActionItemClicked(actionMode: ActionMode?, menuItem: MenuItem?): Boolean {
         when (menuItem!!.itemId) {
             R.id.action_delete -> {
-//                for (item in toDelete!!) {
-//                    //listView.remove(item)
-//                }
-                if (actionMode != null)
-                    actionMode.finish()
+                actionMode?.finish()
                 adapter!!.clearSelection()
+
+
+                adapter!!.notifyDataSetChanged()
+
                 return true
             }
-            else ->
-                return true
+            else -> return true
 
         }
     }
 
     override fun onItemCheckedStateChanged(actionMode: ActionMode?, position: Int, id: Long, checked: Boolean) {
+        var checkedItems = mListView!!.checkedItemCount
         if (checked) {
-            toDelete!!.add(adapter?.getItem(position)!!)
-            adapter!!.setNewSelection(position, checked)
+            if (adapter!!.getItem(position)!!.image.equals("directory_up", ignoreCase = true)) {//not tab select for move up item
+                checkedItems--
+                if (checkedItems == 0) {
+                    adapter!!.clearSelection()
+                    actionMode!!.finish()
+
+                }
+
+            } else
+                adapter!!.setNewSelection(position, checked)
+
+            
 
         } else {
-            toDelete!!.remove(adapter!!.getItem(position))
             adapter!!.removeSelection(position)
 
         }
         adapter!!.notifyDataSetChanged()
-        val checkedItems = mListView!!.checkedItemCount
+
         actionMode!!.title = checkedItems.toString() + " Selected" //showing how many items checked
     }
 
@@ -166,7 +174,7 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     }
 
     override fun onDestroyActionMode(p0: ActionMode?) {
-        toDelete!!.clear()
+
         adapter!!.clearSelection()
     }
 
@@ -175,5 +183,4 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                 R.anim.myanimation)
         view!!.startAnimation(animation)
     }
-
 }
