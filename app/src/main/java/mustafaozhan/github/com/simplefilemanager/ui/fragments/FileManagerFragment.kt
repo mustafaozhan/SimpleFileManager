@@ -1,12 +1,13 @@
 package mustafaozhan.github.com.simplefilemanager.ui.fragments
 
 import android.app.Fragment
+import android.content.res.Configuration
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.AbsListView
+import android.widget.GridView
 import android.widget.ListView
 import kotlinx.android.synthetic.main.fragment_filemanager.*
 import mustafaozhan.github.com.simplefilemanager.R
@@ -14,17 +15,14 @@ import mustafaozhan.github.com.simplefilemanager.model.Item
 import mustafaozhan.github.com.simplefilemanager.ui.adapters.FileManagerAdapter
 import mustafaozhan.github.com.simplefilemanager.util.FileOpen
 import java.io.File
-import java.sql.Date
-import java.text.DateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
-
     private var currentDir: File? = null
-    var mListView: ListView? = null
+    var myGridView: GridView? = null
     private var adapter: FileManagerAdapter? = null
     var fistTime: Boolean = false
 
@@ -36,8 +34,14 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         PreferenceManager.setDefaultValues(activity, R.xml.fragment_preference, false)
         val appPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         val PATH = appPreferences.getString("defaultFolder", "/sdcard/")//getting home directory if first time it will be "/sdcard/"
+
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) //fetching orientation and configuring grid acording to it
+            myGridView!!.numColumns = 1
+        else if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            myGridView!!.numColumns = 3
+
         currentDir = File(PATH)
-        if (fistTime) {
+        if (fistTime) {//only startup ui is setting by separate thread
             Thread().run {
                 setUi(File(PATH))
                 fistTime = false
@@ -47,8 +51,19 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         return fragmentView
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration?) {//if app orientation change running time setting our grid dynamically
+        super.onConfigurationChanged(newConfig)
+        if (newConfig!!.orientation == Configuration.ORIENTATION_PORTRAIT)
+            myGridView!!.numColumns = 1
+        else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            myGridView!!.numColumns = 3
+
+
+    }
+
     private fun bindViews(view: View) {
-        mListView = view.findViewById(R.id.myListView)
+        myGridView = view.findViewById(R.id.myListView)
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -57,8 +72,8 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     }
 
     private fun init() {
-        mListView!!.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
-        mListView!!.setMultiChoiceModeListener(this)
+        myGridView!!.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+        myGridView!!.setMultiChoiceModeListener(this)
         myListView.setOnItemClickListener { adapterView, view, i, l ->
 
             val o = adapter!!.getItem(i)
@@ -77,9 +92,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         val fls = ArrayList<Item>()
         try {
             for (ff in dirs) {
-                val lastModDate = Date(ff.lastModified())
-                val formater = DateFormat.getDateTimeInstance()
-                val date_modify = formater.format(lastModDate)
                 if (ff.isDirectory) {
                     val fbuf = ff.listFiles()
                     var buf = 0
@@ -93,9 +105,9 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                     else
                         num_item += " items"
 
-                    dir.add(Item(ff.name, num_item, date_modify, ff.absolutePath, "directory_icon"))
+                    dir.add(Item(ff.name, num_item, ff.absolutePath, "directory_icon"))
                 } else
-                    fls.add(Item(ff.name, ff.length().toString() + " Byte", date_modify, ff.absolutePath, "file_icon"))
+                    fls.add(Item(ff.name, ff.length().toString() + " Byte", ff.absolutePath, "file_icon"))
             }
         } catch (e: Exception) {
 
@@ -104,9 +116,9 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         Collections.sort(fls)//than files
         dir.addAll(fls)
         if (!file.name.equals("sdcard", ignoreCase = true))
-            dir.add(0, Item("build/generated/source/aidl/androidTest", "Parent Directory", "", file.parent, "directory_up"))
+            dir.add(0, Item("build/generated/source/aidl/androidTest", "Parent Directory", file.parent, "directory_up"))
         adapter = FileManagerAdapter(activity, R.layout.row, dir)
-        mListView!!.adapter = adapter
+        myGridView!!.adapter = adapter
 
     }
 
@@ -115,6 +127,7 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
             R.id.sync -> {
                 setUi(currentDir!!)//refreshing user interface
                 animate()
+
                 return true
             }
         }
@@ -132,7 +145,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                 actionMode?.finish()
                 adapter!!.clearSelection()
 
-
                 adapter!!.notifyDataSetChanged()
 
                 return true
@@ -143,7 +155,7 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     }
 
     override fun onItemCheckedStateChanged(actionMode: ActionMode?, position: Int, id: Long, checked: Boolean) {
-        var checkedItems = mListView!!.checkedItemCount
+        var checkedItems = myGridView!!.checkedItemCount
         if (checked) {
             if (adapter!!.getItem(position)!!.image.equals("directory_up", ignoreCase = true)) {//not tab select for move up item
                 checkedItems--
@@ -156,7 +168,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
             } else
                 adapter!!.setNewSelection(position, checked)
 
-            
 
         } else {
             adapter!!.removeSelection(position)

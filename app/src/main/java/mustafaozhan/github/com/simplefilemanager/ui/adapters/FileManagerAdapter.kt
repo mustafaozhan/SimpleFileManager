@@ -39,7 +39,7 @@ class FileManagerAdapter(private val c: Context, private val id: Int,
 
         view.txtName.text = o.name
         view.txtItem.text = o.data
-        view.txtDate.text = o.date
+
 
         return view
     }
