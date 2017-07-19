@@ -21,26 +21,21 @@ import kotlin.collections.ArrayList
 
 class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
-
     var toDelete: ArrayList<Item>? = null
     private var currentDir: File? = null
     var mListView: ListView? = null
-
 
     private var adapter: FileManagerAdapter? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val fragmentView = inflater.inflate(R.layout.fragment_filemanager, container, false)
+
         bindViews(fragmentView)
-
         setHasOptionsMenu(true)
-
         PreferenceManager.setDefaultValues(activity, R.xml.fragment_preference, false)
-
         val appPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         val PATH = appPreferences.getString("defaultFolder", "/sdcard/")
-
         currentDir = File(PATH)
         setUi(File(PATH))
         return fragmentView
@@ -64,7 +59,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
         myListView.setOnItemClickListener { adapterView, view, i, l ->
 
-
             val o = adapter!!.getItem(i)
             if (o!!.image.equals("directory_icon", ignoreCase = true) || o.image.equals("directory_up", ignoreCase = true)) {
                 currentDir = File(o.path)
@@ -77,9 +71,9 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     }
 
 
-    fun setUi(f: File) {
+    fun setUi(file: File) {
 
-        val dirs = f.listFiles()
+        val dirs = file.listFiles()
 
         val dir = ArrayList<Item>()
         val fls = ArrayList<Item>()
@@ -89,7 +83,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                 val formater = DateFormat.getDateTimeInstance()
                 val date_modify = formater.format(lastModDate)
                 if (ff.isDirectory) {
-
                     val fbuf = ff.listFiles()
                     var buf = 0
                     if (fbuf != null) {
@@ -105,25 +98,19 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                     dir.add(Item(ff.name, num_item, date_modify, ff.absolutePath, "directory_icon"))
                 } else
                     fls.add(Item(ff.name, ff.length().toString() + " Byte", date_modify, ff.absolutePath, "file_icon"))
-
             }
         } catch (e: Exception) {
 
         }
-
         Collections.sort(dir)
         Collections.sort(fls)
         dir.addAll(fls)
-        if (!f.name.equals("sdcard", ignoreCase = true))
-            dir.add(0, Item("build/generated/source/aidl/androidTest", "Parent Directory", "", f.parent, "directory_up"))
+        if (!file.name.equals("sdcard", ignoreCase = true))
+            dir.add(0, Item("build/generated/source/aidl/androidTest", "Parent Directory", "", file.parent, "directory_up"))
         adapter = FileManagerAdapter(activity, R.layout.row, dir)
-
         mListView!!.adapter = adapter
 
     }
-
-    //
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -132,15 +119,11 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                 animate()
                 return true
             }
-
-
         }
         return super.onOptionsItemSelected(item)
     }
 
     override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-
-
         mode!!.title = "Select Items"
         return true
     }
@@ -148,20 +131,16 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     override fun onActionItemClicked(actionMode: ActionMode?, menuItem: MenuItem?): Boolean {
         when (menuItem!!.itemId) {
             R.id.action_delete -> {
-                for (item in toDelete!!) {
-                    //listView.remove(item)
-                }
-                if (actionMode != null) {
+//                for (item in toDelete!!) {
+//                    //listView.remove(item)
+//                }
+                if (actionMode != null)
                     actionMode.finish()
-                }
                 adapter!!.clearSelection()
                 return true
             }
-
             else ->
-
                 return true
-
 
         }
     }
@@ -169,10 +148,7 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     override fun onItemCheckedStateChanged(actionMode: ActionMode?, position: Int, id: Long, checked: Boolean) {
         if (checked) {
             toDelete!!.add(adapter?.getItem(position)!!)
-
-
             adapter!!.setNewSelection(position, checked);
-
 
         } else {
             toDelete!!.remove(adapter!!.getItem(position))
@@ -189,7 +165,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         menuInflater.inflate(R.menu.toolbar_cab, menu)
         return true
     }
-
 
     override fun onDestroyActionMode(p0: ActionMode?) {
         toDelete!!.clear()

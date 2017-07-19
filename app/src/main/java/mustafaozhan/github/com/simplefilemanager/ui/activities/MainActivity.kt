@@ -18,7 +18,6 @@ import mustafaozhan.github.com.simplefilemanager.ui.fragments.MyPreferenceFragme
 
 class MainActivity : AppCompatActivity() {
 
-
     var doubleBackToExitPressedOnce = false
     val FILE_MANAGER = "filemanager"
     val PREFERENCE = "preference"
@@ -31,15 +30,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-
-
         val builder = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
 
-
         checkPermissionsAndOpenFilePicker()
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
@@ -101,14 +96,12 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.myFrame, FileManagerFragment(), FILE_MANAGER).commit()
     }
 
-
     override fun onBackPressed() {
 
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed()
             return
         }
-
 
         val myFragment = fragmentManager.findFragmentByTag(PREFERENCE)
         if (myFragment != null && myFragment.isVisible) {
@@ -117,8 +110,6 @@ class MainActivity : AppCompatActivity() {
                     .beginTransaction()
                     .replace(R.id.myFrame, FileManagerFragment(), FILE_MANAGER)
                     .commit()
-
-
             // openFileManager()
         } else {
             this.doubleBackToExitPressedOnce = true
@@ -127,9 +118,6 @@ class MainActivity : AppCompatActivity() {
             Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000)
         }
     }
-
-
-
 
 
 }
