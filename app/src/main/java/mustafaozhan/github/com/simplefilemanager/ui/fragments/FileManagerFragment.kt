@@ -18,10 +18,10 @@ import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
     private var currentDir: File? = null
+    val removeList = ArrayList<String>()
     var myGridView: GridView? = null
     private var adapter: FileManagerAdapter? = null
     var fistTime: Boolean = false
@@ -57,8 +57,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
             myGridView!!.numColumns = 1
         else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
             myGridView!!.numColumns = 3
-
-
     }
 
     private fun bindViews(view: View) {
@@ -127,7 +125,6 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
             R.id.sync -> {
                 setUi(currentDir!!)//refreshing user interface
                 animate()
-
                 return true
             }
         }
@@ -144,9 +141,12 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
             R.id.action_delete -> {
                 actionMode?.finish()
                 adapter!!.clearSelection()
+                for (i in 0..removeList.size - 1)
+                    deleteRecursive(File(removeList[i]))
 
+                setUi(currentDir!!)
+                animate()
                 adapter!!.notifyDataSetChanged()
-
                 return true
             }
             else -> return true
@@ -156,25 +156,27 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
     override fun onItemCheckedStateChanged(actionMode: ActionMode?, position: Int, id: Long, checked: Boolean) {
         var checkedItems = myGridView!!.checkedItemCount
+
         if (checked) {
             if (adapter!!.getItem(position)!!.image.equals("directory_up", ignoreCase = true)) {//not tab select for move up item
                 checkedItems--
                 if (checkedItems == 0) {
                     adapter!!.clearSelection()
                     actionMode!!.finish()
-
                 }
 
-            } else
+            } else {
                 adapter!!.setNewSelection(position, checked)
+                val temp_path = adapter!!.getItem(position)!!.path
+                removeList.add(temp_path)
 
+            }
 
         } else {
-            adapter!!.removeSelection(position)
-
+            val temp_path = adapter!!.getItem(position)!!.path
+            removeList.remove(temp_path)
         }
         adapter!!.notifyDataSetChanged()
-
         actionMode!!.title = checkedItems.toString() + " Selected" //showing how many items checked
     }
 
@@ -194,4 +196,12 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                 R.anim.myanimation)
         view!!.startAnimation(animation)
     }
+
+    fun deleteRecursive(fileOrDirectory: File) {
+        if (fileOrDirectory.isDirectory)
+            for (child in fileOrDirectory.listFiles()!!)
+                deleteRecursive(child)
+        fileOrDirectory.delete()
+    }
+
 }
