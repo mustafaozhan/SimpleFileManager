@@ -1,7 +1,9 @@
 package mustafaozhan.github.com.simplefilemanager.ui.fragments
 
+import android.app.AlertDialog
 import android.app.Fragment
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.*
@@ -17,6 +19,7 @@ import mustafaozhan.github.com.simplefilemanager.util.FileOpen
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
@@ -139,14 +142,40 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     override fun onActionItemClicked(actionMode: ActionMode?, menuItem: MenuItem?): Boolean {
         when (menuItem!!.itemId) {
             R.id.action_delete -> {
-                actionMode?.finish()
-                adapter!!.clearSelection()
-                for (i in 0..removeList.size - 1)
-                    deleteRecursive(File(removeList[i]))
 
-                setUi(currentDir!!)
-                animate()
-                adapter!!.notifyDataSetChanged()
+
+                val builder: AlertDialog.Builder
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    builder = AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert)
+                } else {
+                    builder = AlertDialog.Builder(activity)
+                }
+                builder.setTitle("Delete entry")
+                        .setMessage("Are you sure you want to delete this entry?")
+                        .setPositiveButton(android.R.string.yes, { dialog, which ->
+                            actionMode?.finish()
+                            adapter!!.clearSelection()
+                            for (i in 0..removeList.size - 1)
+                                deleteRecursive(File(removeList[i]))
+
+                            setUi(currentDir!!)
+                            animate()
+                            adapter!!.notifyDataSetChanged()
+                        })
+                        .setNegativeButton(android.R.string.no, { dialog, which ->
+
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show()
+
+
+
+
+
+
+
+
+
                 return true
             }
             else -> return true
