@@ -96,11 +96,14 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
                 if (ff.isDirectory) {
                     val fbuf = ff.listFiles()
                     var buf = 0
-                    if (fbuf != null) {
+
+                    if (fbuf != null)
                         buf = fbuf.size
-                    } else
+                    else
                         buf = 0
+
                     var num_item = buf.toString()
+
                     if (buf == 0)
                         num_item += " item"
                     else
