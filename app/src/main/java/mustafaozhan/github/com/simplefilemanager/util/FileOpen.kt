@@ -16,8 +16,7 @@ object FileOpen {
     @Throws(IOException::class)
     fun openFile(context: Context, url: File) {
         // Create URI
-        val file = url
-        val uri = Uri.fromFile(file)
+        val uri = Uri.fromFile(url)
 
         val intent = Intent(Intent.ACTION_VIEW)
         // Check what kind of file you are trying to open, by comparing the url with extensions.

@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
 
-            <ImageView
-                android:layout_marginLeft="2sp"
-                android:layout_marginTop="2sp"
-                android:id="@+id/imgView"
-                android:layout_width="50dip"
-                android:layout_height="50dip" />
+        <ImageView
+            android:id="@+id/imgView"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:layout_marginLeft="2sp"
+            android:layout_marginStart="2sp"
+            android:layout_marginTop="2sp"
+            android:contentDescription="@string/img" />
 
-            <TextView
-                android:id="@+id/txtName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dip"
-                android:layout_marginTop="5dip"
-                android:layout_toRightOf="@+id/imgView"
-                android:text="Name"
-                android:maxLines="1"
-                android:textStyle="bold">
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dip"
+            android:layout_marginStart="5dip"
+            android:layout_marginTop="5dip"
+            android:layout_toEndOf="@+id/imgView"
+            android:layout_toRightOf="@+id/imgView"
+            android:maxLines="1"
+            android:text="@string/name"
+            android:textStyle="bold">
 
-            </TextView>
+        </TextView>
 
-            <TextView
-                android:id="@+id/txtItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/txtName"
-                android:layout_marginLeft="10dip"
-                android:layout_toRightOf="@+id/imgView"
-                android:text="Items">
+        <TextView
+            android:id="@+id/txtItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtName"
+            android:layout_marginLeft="10dip"
+            android:layout_marginStart="10dip"
+            android:layout_toEndOf="@+id/imgView"
+            android:layout_toRightOf="@+id/imgView"
+            android:text="@string/items">
 
-            </TextView>
-        </RelativeLayout>
+        </TextView>
+    </RelativeLayout>
 </RelativeLayout>

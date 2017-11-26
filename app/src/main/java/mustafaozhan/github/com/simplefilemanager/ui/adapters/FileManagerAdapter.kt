@@ -17,7 +17,7 @@ class FileManagerAdapter(private val c: Context, private val id: Int,
     }
 
     private var mSelection = HashMap<Int, Boolean>()
-
+    @Suppress("DEPRECATION")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         if (view == null) {
@@ -43,29 +43,15 @@ class FileManagerAdapter(private val c: Context, private val id: Int,
 
         return view
     }
-//functions above for cab selection defining and highlighting
+
+    //functions above for cab selection defining and highlighting
     fun setNewSelection(position: Int, value: Boolean) {
         mSelection.put(position, value)
         notifyDataSetChanged()
     }
 
-    fun isPositionChecked(position: Int): Boolean {
-        val result = mSelection[position]
-        return result ?: false
-    }
-
-    fun getCurrentCheckedPosition(): Set<Int> {
-        return mSelection.keys
-    }
-
-
-    fun removeSelection(position: Int) {
-        mSelection.remove(position)
-        notifyDataSetChanged()
-    }
-
     fun clearSelection() {
-        mSelection = HashMap<Int, Boolean>()
+        mSelection = HashMap()
         notifyDataSetChanged()
     }
 

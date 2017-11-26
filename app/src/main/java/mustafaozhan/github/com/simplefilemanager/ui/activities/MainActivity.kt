@@ -17,14 +17,15 @@ import mustafaozhan.github.com.simplefilemanager.ui.fragments.MyPreferenceFragme
 
 
 class MainActivity : AppCompatActivity() {
-
-    var doubleBackToExitPressedOnce = false
-    val FILE_MANAGER = "filemanager"
-    val PREFERENCE = "preference"
+    private var doubleBackToExitPressedOnce = false
 
     companion object {
         val PERMISSIONS_REQUEST_CODE = 0
+
+        private val FILE_MANAGER = "filemanager"
+        private val PREFERENCE = "preference"
     }
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 showError()
             } else {
-                ActivityCompat.requestPermissions(this, arrayOf<String>(permission), PERMISSIONS_REQUEST_CODE)
+                ActivityCompat.requestPermissions(this, arrayOf(permission), PERMISSIONS_REQUEST_CODE)
             }
         } else {
             openFileManager() //opening filemanager fragment
@@ -82,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                                             permissions: Array<String>, grantResults: IntArray) { // geting result from permissinon request
         when (requestCode) {
             PERMISSIONS_REQUEST_CODE -> {
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openFileManager()
                 } else {
                     showError()
@@ -115,7 +116,7 @@ class MainActivity : AppCompatActivity() {
             this.doubleBackToExitPressedOnce = true
             Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show()
 
-            Handler().postDelayed(Runnable { doubleBackToExitPressedOnce = false }, 2000) //limiting double check time
+            Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000) //limiting double check time
         }
     }
 

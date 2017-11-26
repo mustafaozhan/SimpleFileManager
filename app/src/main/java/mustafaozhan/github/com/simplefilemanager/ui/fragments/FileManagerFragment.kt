@@ -1,5 +1,6 @@
 package mustafaozhan.github.com.simplefilemanager.ui.fragments
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Fragment
 import android.content.res.Configuration
@@ -24,11 +25,12 @@ import kotlin.collections.ArrayList
 class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
     private var currentDir: File? = null
-    val removeList = ArrayList<String>()
-    var myGridView: GridView? = null
+    private val removeList = ArrayList<String>()
+    private var myGridView: GridView? = null
     private var adapter: FileManagerAdapter? = null
-    var fistTime: Boolean = false
+    private var fistTime: Boolean = false
 
+    @SuppressLint("SdCardPath")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val fragmentView = inflater.inflate(R.layout.fragment_filemanager, container, false)
 
@@ -36,21 +38,22 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         setHasOptionsMenu(true)
         PreferenceManager.setDefaultValues(activity, R.xml.fragment_preference, false)
         val appPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
-        val PATH = appPreferences.getString("defaultFolder", "/sdcard/")//getting home directory if first time it will be "/sdcard/"
 
-        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) //fetching orientation and configuring grid acording to it
+        val pathName = appPreferences.getString("defaultFolder", "/sdcard/")//getting home directory if first time it will be "/sdcard/"
+
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) //fetching orientation and configuring grid according to it
             myGridView!!.numColumns = 1
         else if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
             myGridView!!.numColumns = 3
 
-        currentDir = File(PATH)
+        currentDir = File(pathName)
         if (fistTime) {//only startup ui is setting by separate thread
             Thread().run {
-                setUi(File(PATH))
+                setUi(File(pathName))
                 fistTime = false
             }
         } else
-            setUi(File(PATH))//setting user interface
+            setUi(File(pathName))//setting user interface
         return fragmentView
     }
 
@@ -75,7 +78,7 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
     private fun init() {
         myGridView!!.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
         myGridView!!.setMultiChoiceModeListener(this)
-        myListView.setOnItemClickListener { adapterView, view, i, l ->
+        myListView.setOnItemClickListener { _, _, i, _ ->
 
             val o = adapter!!.getItem(i)
             if (o!!.image.equals("directory_icon", ignoreCase = true) || o.image.equals("directory_up", ignoreCase = true)) {//if it is a file it will not change path
@@ -87,29 +90,21 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         }
     }
 
-    fun setUi(file: File) {
+    private fun setUi(file: File) {
         val dirs = file.listFiles()
         val dir = ArrayList<Item>()
         val fls = ArrayList<Item>()
         try {
             for (ff in dirs) {
                 if (ff.isDirectory) {
-                    val fbuf = ff.listFiles()
-                    var buf = 0
-
-                    if (fbuf != null)
-                        buf = fbuf.size
+                    val fBuf = ff.listFiles()
+                    val buf = fBuf?.size ?: 0
+                    var numItem = buf.toString()
+                    numItem += if (buf == 0)
+                        " item"
                     else
-                        buf = 0
-
-                    var num_item = buf.toString()
-
-                    if (buf == 0)
-                        num_item += " item"
-                    else
-                        num_item += " items"
-
-                    dir.add(Item(ff.name, num_item, ff.absolutePath, "directory_icon"))
+                        " items"
+                    dir.add(Item(ff.name, numItem, ff.absolutePath, "directory_icon"))
                 } else
                     fls.add(Item(ff.name, ff.length().toString() + " Byte", ff.absolutePath, "file_icon"))
             }
@@ -147,36 +142,28 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
             R.id.action_delete -> {
 
 
-                val builder: AlertDialog.Builder
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    builder = AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert)
+                val builder: AlertDialog.Builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    AlertDialog.Builder(activity, android.R.style.Theme_Material_Dialog_Alert)
                 } else {
-                    builder = AlertDialog.Builder(activity)
+                    AlertDialog.Builder(activity)
                 }
                 builder.setTitle("Delete entry")
                         .setMessage("Are you sure you want to delete this entry?")
-                        .setPositiveButton(android.R.string.yes, { dialog, which ->
+                        .setPositiveButton(android.R.string.yes, { _, _ ->
                             actionMode?.finish()
                             adapter!!.clearSelection()
-                            for (i in 0..removeList.size - 1)
+                            for (i in 0 until removeList.size)
                                 deleteRecursive(File(removeList[i]))
 
                             setUi(currentDir!!)
                             animate()
                             adapter!!.notifyDataSetChanged()
                         })
-                        .setNegativeButton(android.R.string.no, { dialog, which ->
+                        .setNegativeButton(android.R.string.no, { _, _ ->
 
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show()
-
-
-
-
-
-
-
 
 
                 return true
@@ -199,14 +186,14 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
 
             } else {
                 adapter!!.setNewSelection(position, checked)
-                val temp_path = adapter!!.getItem(position)!!.path
-                removeList.add(temp_path)
+                val tempPath = adapter!!.getItem(position)!!.path
+                removeList.add(tempPath)
 
             }
 
         } else {
-            val temp_path = adapter!!.getItem(position)!!.path
-            removeList.remove(temp_path)
+            val tempPath = adapter!!.getItem(position)!!.path
+            removeList.remove(tempPath)
         }
         adapter!!.notifyDataSetChanged()
         actionMode!!.title = checkedItems.toString() + " Selected" //showing how many items checked
@@ -223,13 +210,13 @@ class FileManagerFragment : Fragment(), AbsListView.MultiChoiceModeListener {
         adapter!!.clearSelection()
     }
 
-    fun animate() {//custom animation method
+    private fun animate() {//custom animation method
         val animation = AnimationUtils.loadAnimation(activity,
                 R.anim.myanimation)
         view!!.startAnimation(animation)
     }
 
-    fun deleteRecursive(fileOrDirectory: File) {
+    private fun deleteRecursive(fileOrDirectory: File) {
         if (fileOrDirectory.isDirectory)
             for (child in fileOrDirectory.listFiles()!!)
                 deleteRecursive(child)
